@@ -14,30 +14,48 @@ from program.operation import Operation
 from program.operator import Operator
 
 
-class C_Python:
-    def __init__(self, code_block):
-        self.code = code_block
+# imports
+import subprocess
+import sys
+import tempfile
+import platform
+import textwrap
 
+import transpiler  # base class module
+
+from program.command_type import CommandType
+from program.assignment import Assignment
+from program.condition import Condition
+from program.output import Output
+from program.variable import Variable
+from program.value import Value
+from program.operation import Operation
+from program.operator import Operator
+
+
+class C_Python(transpiler.Transpiler):
+    """Transpiles a C-like intermediate representation into Python code and can display it in IDLE."""
+    
+    def __init__(self, code_block):
+        super().__init__(code_block)  # initialize base Transpiler
+
+    # --------------------------
+    # Convert CodeBlock → Python
+    # --------------------------
     def convert(self, code_block=None, indent=0):
         if code_block is None:
-            code_block = self.code
+            code_block = self.code_block
 
         code = ""
-        # 4 spaces per indent
-        indent_str = "    " * indent  
+        indent_str = "    " * indent
 
         for cmd in code_block.commands:
-            if cmd.command_type == CommandType.ASSIGNMENT:
-                line = self._convert_assignment(cmd)
-                code += f"{indent_str}{line}\n"
-
-            elif cmd.command_type == CommandType.CONDITION:
-                line = self._convert_condition(cmd, indent)
-                code += line
-
-            elif cmd.command_type == CommandType.OUTPUT:
-                line = self._convert_output(cmd)
-                code += f"{indent_str}{line}\n"
+            if isinstance(cmd, Assignment):
+                code += f"{indent_str}{self._convert_assignment(cmd)}\n"
+            elif isinstance(cmd, Condition):
+                code += self._convert_condition(cmd, indent)
+            elif isinstance(cmd, Output):
+                code += f"{indent_str}{self._convert_output(cmd)}\n"
 
         return code
 
@@ -51,7 +69,6 @@ class C_Python:
         code = f"{'    '*indent}if {expr}:\n"
         code += self.convert(condition.true_code_block, indent + 1)
 
-        # Handle the optional else block
         if getattr(condition, "false_code_block", None) and condition.false_code_block.commands:
             code += f"{'    '*indent}else:\n"
             code += self.convert(condition.false_code_block, indent + 1)
@@ -88,38 +105,70 @@ class C_Python:
         }
         return mapping[op]
 
-    
-    def run_in(self, code_to_display):
+    # --------------------------
+    # Display generated code
+    # --------------------------
+    def run_in(self) -> None:
         """
-        Displays the given code (or the transpiled code) in a new IDLE window
-        with a smooth character-by-character typing animation.
+        Displays the transpiled Python code in an IDLE window
+        with a smooth typing animation.
         """
-        # If no custom string was passed, use the transpiled code
-        if code_to_display is None:
-            code_to_display = self.convert()
-
-        # Escape newlines and quotes properly for embedding in a Python string
+        code_to_display = self.convert()
         code_to_display = code_to_display.replace("\\", "\\\\").replace('"', '\\"')
+        delay_seconds = 0.02
 
-        delay_seconds = 0.02  # typing speed
-
-        # Python code that will animate the text in IDLE
         code_runner = f'''
 import time
 text = """{code_to_display}"""
 for char in text:
     print(char, end="", flush=True)
     time.sleep({delay_seconds})
-print()  # move to a new line at the end
+print()
 '''
 
-        # Write this animation code into a temporary file
         with tempfile.NamedTemporaryFile("w", delete=False, suffix=".py") as tmp:
             tmp.write(code_runner)
             tmp_path = tmp.name
 
-        # Open a new IDLE window to display it
-        subprocess.Popen([sys.executable, "-m", "idlelib", "-r", tmp_path])
+        system = platform.system()
+        if system == "Darwin":  # macOS
+            subprocess.Popen(["open", "-a", "IDLE", tmp_path])
+        elif system == "Windows":
+            subprocess.Popen([sys.executable, "-m", "idlelib", "-r", tmp_path])
+        else:  # Linux or other
+            subprocess.Popen([sys.executable, "-m", "idlelib", "-r", tmp_path])
+
+    # --------------------------
+    # Display runtime output
+    # --------------------------
+    def run_out(self, output: int) -> None:
+        """
+        Displays a numeric or string output with typing animation in IDLE.
+        """
+        to_print = str(output)
+        delay_seconds = 0.02
+
+        code_to_run = textwrap.dedent(f"""
+            import time
+            text = "{to_print}"
+            for char in text:
+                print(char, end="", flush=True)
+                time.sleep({delay_seconds})
+            print()
+        """)
+
+        with tempfile.NamedTemporaryFile("w", delete=False, suffix=".py") as tmp:
+            tmp.write(code_to_run)
+            tmp_path = tmp.name
+
+        system = platform.system()
+        if system == "Darwin":
+            subprocess.Popen(["open", "-a", "IDLE", tmp_path])
+        elif system == "Windows":
+            subprocess.Popen([sys.executable, "-m", "idlelib", "-r", tmp_path])
+        else:
+            subprocess.Popen([sys.executable, "-m", "idlelib", "-r", tmp_path])
+
 
     
     # def run_out(self, output) -> None:
