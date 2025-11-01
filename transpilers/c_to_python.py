@@ -1,5 +1,4 @@
 # imports
-import transpiler
 import subprocess
 import sys
 import tempfile
@@ -21,8 +20,6 @@ import tempfile
 import platform
 import textwrap
 
-import transpiler  # base class module
-
 from program.command_type import CommandType
 from program.assignment import Assignment
 from program.condition import Condition
@@ -31,9 +28,10 @@ from program.variable import Variable
 from program.value import Value
 from program.operation import Operation
 from program.operator import Operator
+from transpilers.transpiler import Transpiler
 
 
-class C_Python(transpiler.Transpiler):
+class C_Python(Transpiler):
     """Transpiles a C-like intermediate representation into Python code and can display it in IDLE."""
     
     def __init__(self, code_block):
@@ -116,6 +114,8 @@ class C_Python(transpiler.Transpiler):
         code_to_display = self.convert()
         code_to_display = code_to_display.replace("\\", "\\\\").replace('"', '\\"')
         delay_seconds = 0.02
+
+        print(code_to_display)
 
         code_runner = f'''
 import time

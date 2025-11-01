@@ -1,10 +1,11 @@
 import sys
 
 from program.code_block import CodeBlock
+from transpilers.c_to_python import C_Python
 
 class ExecutionController:
     program: CodeBlock
-    inputs: list[int]
+    inputs: list[str]
 
     def __init__(self):
         self.file = sys.argv[1]
@@ -12,7 +13,8 @@ class ExecutionController:
         self.program = self._load_program(self.file)
 
     def run_program(self) -> None:
-        ...
+        python_transpiler = C_Python(self.program)
+        python_transpiler.run_in()
     
     def _load_program(self, c_code: str) -> CodeBlock:
         with open(self.file, 'r') as f:
@@ -22,7 +24,9 @@ class ExecutionController:
         print(cleaned_code)
         stck = [[]]
         current_str = ""
-        for i, char in enumerate(cleaned_code):
+        i = 0
+        while i < len(cleaned_code):
+            char = cleaned_code[i]
             if i + 6 < len(cleaned_code) and cleaned_code[i:i+5] == "argv[" and cleaned_code[i+5].isdigit() and cleaned_code[i+6] == "]":
                 current_str += self.inputs[int(cleaned_code[i+5])]
                 i += 6
@@ -41,6 +45,7 @@ class ExecutionController:
                 stck[-1].append(block)
             else:
                 current_str += char
+            i += 1
         if current_str:
             stck[0].append(current_str)
         print(stck)
@@ -64,11 +69,10 @@ class ExecutionController:
     def take_inputs(self) -> list[int]:
         inputs = []
         for arg in range(int(sys.argv[2])):
-            inputs.append(int(arg+3))
+            inputs.append(sys.argv[arg+3])
         return inputs
 
 if __name__ == "__main__":
     controller = ExecutionController()
-    print(controller.program.commands)
-    print(controller.program.commands[0].command_type)
+    controller.run_program()
     pass
