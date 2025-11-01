@@ -2,6 +2,7 @@ import sys
 
 from program.code_block import CodeBlock
 from transpilers.python_transpiler import PythonTranspiler
+from transpilers.excel_transpiler import ExcelTranspiler
 
 class ExecutionController:
     program: CodeBlock
@@ -13,8 +14,8 @@ class ExecutionController:
         self.program = self._load_program(self.file)
 
     def run_program(self) -> None:
-        python_transpiler = PythonTranspiler(self.program)
-        python_transpiler.run_in()
+        excel_transpiler = ExcelTranspiler(self.program)
+        excel_transpiler.run_in()
     
     def _load_program(self, c_code: str) -> CodeBlock:
         with open(self.file, 'r') as f:
