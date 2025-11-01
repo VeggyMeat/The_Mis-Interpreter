@@ -2,25 +2,9 @@
 import subprocess
 import sys
 import tempfile
-
-from program.command_type import CommandType
-from program.assignment import Assignment
-from program.condition import Condition
-from program.output import Output
-from program.variable import Variable
-from program.value import Value
-from program.operation import Operation
-from program.operator import Operator
-
-
-# imports
-import subprocess
-import sys
-import tempfile
 import platform
 import textwrap
 
-from program.command_type import CommandType
 from program.assignment import Assignment
 from program.condition import Condition
 from program.output import Output
@@ -31,7 +15,7 @@ from program.operator import Operator
 from transpilers.transpiler import Transpiler
 
 
-class C_Python(Transpiler):
+class PythonTranspiler(Transpiler):
     """Transpiles a C-like intermediate representation into Python code and can display it in IDLE."""
     
     def __init__(self, code_block):

@@ -1,7 +1,7 @@
 import sys
 
 from program.code_block import CodeBlock
-from transpilers.c_to_python import C_Python
+from transpilers.python_transpiler import PythonTranspiler
 
 class ExecutionController:
     program: CodeBlock
@@ -13,7 +13,7 @@ class ExecutionController:
         self.program = self._load_program(self.file)
 
     def run_program(self) -> None:
-        python_transpiler = C_Python(self.program)
+        python_transpiler = PythonTranspiler(self.program)
         python_transpiler.run_in()
     
     def _load_program(self, c_code: str) -> CodeBlock:
@@ -66,7 +66,7 @@ class ExecutionController:
 
         return out
 
-    def take_inputs(self) -> list[int]:
+    def take_inputs(self) -> list[str]:
         inputs = []
         for arg in range(int(sys.argv[2])):
             inputs.append(sys.argv[arg+3])
