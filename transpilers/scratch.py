@@ -1,4 +1,4 @@
-from transpilers.itranspiler import ITranspiler
+from transpilers.transpiler import ITranspiler
 
 import keyboard
 import mouse
