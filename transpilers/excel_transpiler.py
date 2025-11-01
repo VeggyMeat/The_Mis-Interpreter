@@ -2,6 +2,7 @@ import tempfile
 import subprocess
 import platform
 import os
+import time
 from typing import Optional
 
 from program.code_block import CodeBlock
@@ -14,10 +15,9 @@ from program.operation import Operation
 from program.operator import Operator
 from transpilers.transpiler import Transpiler
 
-try:
-    import openpyxl
-except ModuleNotFoundError:
-    raise ModuleNotFoundError("Please install openpyxl: pip install openpyxl")
+import xlwings as xw
+
+DELAY = 0.03
 
 
 class ExcelTranspiler(Transpiler):
@@ -25,10 +25,26 @@ class ExcelTranspiler(Transpiler):
 
     def __init__(self, code_block: CodeBlock):
         super().__init__(code_block)
+        self.last_cell = {}
+        self.row = 1
+        self.run_cell = "G2"
+    
+    def _write_cell_char_by_char(self, cell, text):
+        self.sheet.range(cell).value = ""
+        for i in range(0, len(text), 3):
+            self.sheet.range(cell).value = text[:i+1]
+            time.sleep(DELAY)
 
-    # --------------------------
-    # Convert CodeBlock → Excel
-    # --------------------------
+    def _generate_excel_file(self) -> None:
+        self.app = xw.App(visible=False)
+        self.wb = self.app.books.add()
+        self.sheet = self.wb.sheets[0]
+
+        for i, column_name in enumerate(["Type", "Variable", "Expression", "Run?", "Result", "Variable Set", "Run Cell"]):
+            self._write_cell_char_by_char(f"{'ABCDEFG'[i]}{self.row}", column_name)
+        self.row += 1
+        self._write_block_to_sheet(self.code_block)
+    
     def _convert_expression(self, expr) -> str:
         if isinstance(expr, Value):
             return str(expr.value)
@@ -37,6 +53,19 @@ class ExcelTranspiler(Transpiler):
         elif isinstance(expr, Operation):
             left = self._convert_expression(expr.left_operand)
             right = self._convert_expression(expr.right_operand)
+            op = self._convert_operator(expr.operator)
+            return f"({left}{op}{right})"
+        else:
+            raise ValueError(f"Unknown expression type: {expr}")
+    
+    def _convert_expression_actual(self, expr) -> str:
+        if isinstance(expr, Value):
+            return str(expr.value)
+        elif isinstance(expr, Variable):
+            return f"LOOKUP(\"{expr.name}\", F2:F{self.row - 1}, E2:E{self.row - 1})"
+        elif isinstance(expr, Operation):
+            left = self._convert_expression_actual(expr.left_operand)
+            right = self._convert_expression_actual(expr.right_operand)
             op = self._convert_operator(expr.operator)
             return f"({left}{op}{right})"
         else:
@@ -55,85 +84,46 @@ class ExcelTranspiler(Transpiler):
         }
         return mapping[op]
 
-    def _convert_assignment(self, assignment: Assignment) -> str:
-        return f"{assignment.variable.name} = {self._convert_expression(assignment.expression)}"
-
-    def _convert_condition(self, condition: Condition) -> str:
-        # Simple Excel IF placeholder; nested blocks will appear in next rows
-        expr = self._convert_expression(condition.expression)
-        return f"=IF({expr}, TRUE_VAL, FALSE_VAL)"
-
-    def _convert_output(self, output: Output) -> str:
-        return f"OUTPUT: {self._convert_expression(output.expression)}"
-
-    def _write_block_to_sheet(self, code_block: CodeBlock, ws, row_counter: int) -> int:
+    def _write_block_to_sheet(self, code_block: CodeBlock):
         for cmd in code_block.commands:
             if isinstance(cmd, Assignment):
-                ws.cell(row=row_counter, column=1, value=self._convert_assignment(cmd))
-                row_counter += 1
+                var_name = cmd.variable.name
+                expr = self._convert_expression(cmd.expression)
+                self._write_cell_char_by_char(f"A{self.row}", "Assignment")
+                self._write_cell_char_by_char(f"B{self.row}", var_name)
+                self._write_cell_char_by_char(f"C{self.row}", expr)
+                self._write_cell_char_by_char(f"D{self.row}", f"=D{self.row - 1}" if self.row > 2 else f"={self.run_cell}")
+                expr_actual = self._convert_expression_actual(cmd.expression)
+                self._write_cell_char_by_char(f"E{self.row}", f"=IF(D{self.row}, {expr_actual}, \"\")")
+                self._write_cell_char_by_char(f"F{self.row}", f"=IF(D{self.row}, \"{var_name}\", \"\")")
+                self.row += 1
             elif isinstance(cmd, Condition):
-                ws.cell(row=row_counter, column=2, value=self._convert_condition(cmd))
-                row_counter += 1
-                if getattr(cmd, "true_code_block", None):
-                    row_counter = self._write_block_to_sheet(cmd.true_code_block, ws, row_counter)
-                if getattr(cmd, "false_code_block", None):
-                    ws.cell(row=row_counter, column=2, value="ELSE")
-                    row_counter += 1
-                    row_counter = self._write_block_to_sheet(cmd.false_code_block, ws, row_counter)
+                expr = self._convert_expression(cmd.expression)
+                self._write_cell_char_by_char(f"A{self.row}", "Condition")
+                self._write_cell_char_by_char(f"C{self.row}", expr)
+                expr_actual = self._convert_expression_actual(cmd.expression)
+                self._write_cell_char_by_char(f"D{self.row}", f"=IF({f"D{self.row - 1}" if self.row > 2 else self.run_cell}, IF({expr_actual}, TRUE, FALSE), 0)")
+                expression_row = self.row
+                self.row += 1
+                self._write_block_to_sheet(cmd.true_code_block)
+                if getattr(cmd, "false_code_block", None) and cmd.false_code_block.commands:
+                    self._write_cell_char_by_char(f"A{self.row}", "Condition")
+                    self._write_cell_char_by_char(f"C{self.row}", f"NOT({expr})")
+                    self._write_cell_char_by_char(f"D{self.row}", f"=IF(D{expression_row}=0, 0, IF(D{expression_row}=TRUE, FALSE, TRUE))")
+                    self.row += 1
+                    self._write_block_to_sheet(cmd.false_code_block)
             elif isinstance(cmd, Output):
-                ws.cell(row=row_counter, column=3, value=self._convert_output(cmd))
-                row_counter += 1
-        return row_counter
+                expr = self._convert_expression(cmd.expression)
+                self._write_cell_char_by_char(f"A{self.row}", "Output")
+                self._write_cell_char_by_char(f"C{self.row}", expr)
+                self._write_cell_char_by_char(f"D{self.row}", f"=D{self.row - 1}" if self.row > 2 else "")
+                expr_actual = self._convert_expression_actual(cmd.expression)
+                self._write_cell_char_by_char(f"E{self.row}", f"=IF(D{self.row}, {expr_actual}, \"\")")
+                self.row += 1
 
-    def _generate_excel_file(self) -> str:
-        wb = openpyxl.Workbook()
-        ws: openpyxl.worksheet.worksheet.Worksheet = wb.active
-        ws.title = "Code"
-
-        # Headers
-        ws.cell(row=1, column=1, value="Assignments / Formulas")
-        ws.cell(row=1, column=2, value="Conditionals / Statements")
-        ws.cell(row=1, column=3, value="Outputs")
-
-        # Fill in the code
-        self._write_block_to_sheet(self.code_block, ws, row_counter=2)
-
-        # Save to temporary file
-        tmp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx")
-        wb.save(tmp_file.name)
-        tmp_file.close()
-        return tmp_file.name
-
-    # --------------------------
-    # Implements Transpiler interface
-    # --------------------------
     def run_in(self) -> None:
         """Generate Excel code from code block and open it as popup."""
-        file_path = self._generate_excel_file()
-        system = platform.system()
-        if system == "Darwin":
-            subprocess.Popen(["open", file_path])
-        elif system == "Windows":
-            os.startfile(file_path)
-        else:
-            subprocess.Popen(["xdg-open", file_path])
+        self._generate_excel_file()
 
     def run_out(self, output: Optional[int] = None) -> None:
-        """Display numeric/string output in Excel as a single cell."""
-        wb = openpyxl.Workbook()
-        ws = wb.active
-        ws.title = "Output"
-        ws.cell(row=1, column=1, value=str(output) if output is not None else "None")
-
-        tmp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx")
-        wb.save(tmp_file.name)
-        tmp_file.close()
-
-        system = platform.system()
-        if system == "Darwin":
-            subprocess.Popen(["open", tmp_file.name])
-        elif system == "Windows":
-            os.startfile(tmp_file.name)
-        else:
-            subprocess.Popen(["xdg-open", tmp_file.name])
-
+        pass
