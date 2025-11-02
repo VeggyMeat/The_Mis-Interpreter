@@ -33,7 +33,7 @@ class MinecraftTranspiler(Transpiler):
                 false_code_block = self._code_block_to_commands(cmd.false_code_block)
                 expression = self._expression_to_commands(cmd.expression)
                 commands += expression[:-1]
-                true_code_block = [f"execute if score {expression[-1]} vars matches 1 run " + line for line in true_code_block]
+                true_code_block = [f"execute unless score {expression[-1]} vars matches 0 run " + line for line in true_code_block]
                 false_code_block = [f"execute if score {expression[-1]} vars matches 0 run " + line for line in false_code_block]
                 commands += true_code_block
                 commands += false_code_block
