@@ -1,9 +1,10 @@
 import sys
 
 from program.code_block import CodeBlock
-from transpilers.minecraft_transpiler import MinecraftTranspiler
 from transpilers.python_transpiler import PythonTranspiler
 from transpilers.excel_transpiler import ExcelTranspiler
+from transpilers.minecraft_transpiler import MinecraftTranspiler
+from transpilers.scratch import Scratch
 
 class ExecutionController:
     program: CodeBlock
@@ -15,15 +16,38 @@ class ExecutionController:
         self.program = self._load_program(self.file)
 
     def run_program(self) -> None:
-        excel_transpiler = MinecraftTranspiler(self.program)
+        input(f"\nExecute {self.file}?")
+
+        print(f"Transpiling {self.file} to program.py...")
+
+        python_transpiler = PythonTranspiler(self.program)
+        python_transpiler.run_in()
+
+        print("Transpiling program.py to program.sb3...")
+
+        scratch_transpiler = Scratch(self.program)
+        scratch_transpiler.run_in()
+
+        print("Transpiling program.sb3 to program.xlsx...")
+        
+        excel_transpiler = ExcelTranspiler(self.program)
         excel_transpiler.run_in()
+
+        print("Transpiling program.xlsx to Minecraft commands...")
+        minecraft_transpiler = MinecraftTranspiler(self.program)
+        minecraft_transpiler.run_in()
+
+        minecraft_transpiler.run_out()
+        excel_transpiler.run_out()
+        scratch_transpiler.run_out()
+        python_transpiler.run_out()
     
     def _load_program(self, c_code: str) -> CodeBlock:
         with open(self.file, 'r') as f:
             c_code = f.read()
-        print(c_code)
+        print("\n"+c_code)
         cleaned_code = self._clean_code(c_code)
-        print(cleaned_code)
+        # print(cleaned_code)
         stck = [[]]
         current_str = ""
         i = 0
@@ -50,7 +74,7 @@ class ExecutionController:
             i += 1
         if current_str:
             stck[0].append(current_str)
-        print(stck)
+        # print(stck)
         return CodeBlock(stck[0])
 
     def _clean_code(self, c_code: str) -> str:
