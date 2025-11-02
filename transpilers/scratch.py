@@ -71,10 +71,6 @@ class Scratch(Transpiler):
                 mouse.click()
                 time.sleep(self.scroll_delay)
                 mouse.move(285,300,absolute=True)
-            case "LEFT_SHIFT":
-                pass
-            case "RIGHT_SHIFT":
-                pass
             case "EQUALS":
                 mouse.move(self.tabs["operators"][0], self.tabs["operators"][1],absolute=True)
                 mouse.click()

@@ -20,10 +20,8 @@ class Operation(Expression):
             return Operator.ADD
         elif op_str == "-":
             return Operator.SUBTRACT
-        elif op_str == ">>":
-            return Operator.SHIFT_RIGHT
-        elif op_str == "<<":
-            return Operator.SHIFT_LEFT
+        elif op_str == "*":
+            return Operator.MULTIPLY
         elif op_str == "<":
             return Operator.LESS_THAN
         elif op_str == ">":

@@ -50,6 +50,8 @@ class MinecraftTranspiler(Transpiler):
             return "+="
         elif operator == Operator.SUBTRACT:
             return "-="
+        elif operator == Operator.MULTIPLY:
+            return "*="
         elif operator == Operator.EQUALS:
             return "=="
         elif operator == Operator.NOT_EQUALS:

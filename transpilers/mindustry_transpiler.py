@@ -59,6 +59,8 @@ class MindustryTranspiler(Transpiler):
             return 'add'
         elif operator == Operator.SUBTRACT:
             return 'sub'
+        elif operator == Operator.MULTIPLY:
+            return 'mul'
         elif operator == Operator.EQUALS:
             return 'equal'
         elif operator == Operator.NOT_EQUALS:

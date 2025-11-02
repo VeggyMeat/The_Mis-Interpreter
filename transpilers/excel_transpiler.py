@@ -82,8 +82,7 @@ class ExcelTranspiler(Transpiler):
         mapping = {
             Operator.ADD: "+",
             Operator.SUBTRACT: "-",
-            Operator.LEFT_SHIFT: "<<",
-            Operator.RIGHT_SHIFT: ">>",
+            Operator.MULTIPLY: "*",
             Operator.EQUALS: "=",
             Operator.NOT_EQUALS: "<>",
             Operator.LESS_THAN: "<",
