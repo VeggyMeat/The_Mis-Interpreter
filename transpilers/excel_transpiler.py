@@ -30,13 +30,8 @@ class ExcelTranspiler(Transpiler):
     
     def _write_cell_char_by_char(self, cell, text):
         self.sheet.range(cell).value = ""
-        if text and text[0] == "=":
-            self.sheet.range(cell).value = text
-            time.sleep(DELAY*len(text))
-        else:
-            for i in range(0, len(text)+3, 3):
-                self.sheet.range(cell).value = text[:i+1 if i+1 < len(text) else len(text)]
-                time.sleep(DELAY)
+        self.sheet.range(cell).value = text
+        time.sleep(DELAY)
 
     def _generate_excel_file(self) -> None:
         self.app = xw.App(visible=True,add_book=False)
@@ -132,6 +127,7 @@ class ExcelTranspiler(Transpiler):
     def run_in(self) -> None:
         """Generate Excel code from code block and open it as popup."""
         self._generate_excel_file()
+        time.sleep(3)
 
     def run_out(self) -> None:
         windows = [w for w in gw.getWindowsWithTitle('Excel') if w.title]

@@ -126,9 +126,9 @@ class PythonTranspiler(Transpiler):
             time.sleep(5)
 
             keyboard.send('ctrl+a')
-            time.sleep(1)
+            time.sleep(0.5)
             keyboard.send('ctrl+c')
-            time.sleep(1)
+            time.sleep(0.2)
 
             text = pyperclip.paste().splitlines()
             output = text[text.index("program()")+1:]

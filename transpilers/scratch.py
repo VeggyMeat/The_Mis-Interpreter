@@ -342,7 +342,7 @@ class Scratch(Transpiler):
         
             mouse.move(1020,190,absolute=True)
             mouse.click()
-            time.sleep(5)
+            time.sleep(3)
 
             mouse.move(380,142)
             mouse.click()
