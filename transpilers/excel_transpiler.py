@@ -140,3 +140,5 @@ class ExcelTranspiler(Transpiler):
         time.sleep(1)
         self._write_cell_char_by_char(self.run_cell, "TRUE")
         time.sleep(TIME_HELD)
+        if windows:
+            win.close()

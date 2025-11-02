@@ -352,3 +352,6 @@ class Scratch(Transpiler):
             time.sleep(self.mouse_delay)
             mouse.move(916,520)
             mouse.click()
+
+            time.sleep(self.mouse_delay)
+            win.close()
