@@ -37,7 +37,7 @@ class ExcelTranspiler(Transpiler):
                 time.sleep(DELAY)
 
     def _generate_excel_file(self) -> None:
-        self.app = xw.App(visible=True)
+        self.app = xw.App(visible=True,add_book=False)
         self.wb = self.app.books.add()
         self.sheet = self.wb.sheets[0]
 
