@@ -30,13 +30,14 @@ class Scratch(Transpiler):
     program_x : int = 580
     program_y : int = 250
     expressions_area = (550,700)
-    mouse_delay = 0.15
+    mouse_delay = 0.1
+    scroll_delay = 0.15
 
     tabs: dict[str, tuple[int, int]] = {"variables":(240,550), "operators":(240,500),"control":(240,410),"looks":(240,275),"events":(240,360)}
     def _get_variable(self, variable_name : str, location: tuple[int,int]) -> None:
         mouse.move(self.tabs["variables"][0], self.tabs["variables"][1],absolute=True)
         mouse.click()
-        time.sleep(self.mouse_delay)
+        time.sleep(self.scroll_delay)
         if variable_name not in self.variables:
             raise ValueError(f"Variable {variable_name} not found")
         i = self.variables.index(variable_name)
@@ -53,22 +54,22 @@ class Scratch(Transpiler):
             case "START":
                 mouse.move(self.tabs["events"][0], self.tabs["events"][1],absolute=True)
                 mouse.click()
-                time.sleep(self.mouse_delay*5)
+                time.sleep(self.scroll_delay)
                 mouse.move(285,290,absolute=True)
             case "SET":
                 mouse.move(self.tabs["variables"][0], self.tabs["variables"][1],absolute=True)
                 mouse.click()
-                time.sleep(self.mouse_delay)
+                time.sleep(self.scroll_delay)
                 mouse.move(285,306+self.variables_list_offset*len(self.variables),absolute=True)
             case "ADD":
                 mouse.move(self.tabs["operators"][0], self.tabs["operators"][1],absolute=True)
                 mouse.click()
-                time.sleep(self.mouse_delay)
+                time.sleep(self.scroll_delay)
                 mouse.move(285,265,absolute=True)
             case "SUBTRACT":
                 mouse.move(self.tabs["operators"][0], self.tabs["operators"][1],absolute=True)
                 mouse.click()
-                time.sleep(self.mouse_delay)
+                time.sleep(self.scroll_delay)
                 mouse.move(285,300,absolute=True)
             case "LEFT_SHIFT":
                 pass
@@ -77,32 +78,32 @@ class Scratch(Transpiler):
             case "EQUALS":
                 mouse.move(self.tabs["operators"][0], self.tabs["operators"][1],absolute=True)
                 mouse.click()
-                time.sleep(self.mouse_delay)
+                time.sleep(self.scroll_delay)
                 mouse.move(285,545,absolute=True)
             case "NOT_EQUALS" :
                 mouse.move(self.tabs["operators"][0], self.tabs["operators"][1],absolute=True)
                 mouse.click()
-                time.sleep(self.mouse_delay)
+                time.sleep(self.scroll_delay)
                 mouse.move(285,670,absolute=True)
             case "LESS_THAN":
                 mouse.move(self.tabs["operators"][0], self.tabs["operators"][1],absolute=True)
                 mouse.click()
-                time.sleep(self.mouse_delay)
+                time.sleep(self.scroll_delay)
                 mouse.move(285,510,absolute=True)
             case "GREATER_THAN":
                 mouse.move(self.tabs["operators"][0], self.tabs["operators"][1],absolute=True)
                 mouse.click()
-                time.sleep(self.mouse_delay)
+                time.sleep(self.scroll_delay)
                 mouse.move(285,475,absolute=True)
             case "IF":
                 mouse.move(self.tabs["control"][0], self.tabs["control"][1],absolute=True)
                 mouse.click()
-                time.sleep(self.mouse_delay)
+                time.sleep(self.scroll_delay)
                 mouse.move(285,590,absolute=True)
             case "SAY":
                 mouse.move(self.tabs["looks"][0], self.tabs["looks"][1],absolute=True)
                 mouse.click()
-                time.sleep(self.mouse_delay)
+                time.sleep(self.scroll_delay)
                 mouse.move(285,310,absolute=True)
             case _:
                 raise ValueError(f"Unknown block: {block}")
@@ -260,7 +261,7 @@ class Scratch(Transpiler):
 
                     mouse.move(self.tabs["variables"][0], self.tabs["variables"][1],absolute=True)
                     mouse.click()
-                    time.sleep(self.mouse_delay)
+                    time.sleep(self.scroll_delay)
 
                     mouse.move(360,260)
                     mouse.click()
@@ -268,7 +269,7 @@ class Scratch(Transpiler):
                     keyboard.write(command.variable.name)
                     time.sleep(self.mouse_delay)
                     keyboard.press_and_release('enter')
-                    time.sleep(self.mouse_delay)
+                    time.sleep(self.scroll_delay)
                     
                 i = self.variables.index(command.variable.name)
 
@@ -276,7 +277,7 @@ class Scratch(Transpiler):
                 mouse.move(45,0,absolute=False)
                 time.sleep(self.mouse_delay)
                 mouse.click()
-                time.sleep(self.mouse_delay)
+                time.sleep(self.scroll_delay)
                 mouse.move(0,45 + self.variables_list_offset * i,absolute=False)
                 mouse.click()
                 time.sleep(self.mouse_delay)
@@ -304,13 +305,18 @@ class Scratch(Transpiler):
                 self.program_y += 38
 
     def run_in(self) -> None:
-        subprocess.Popen(r'C:\Program Files (x86)\Scratch 3\Scratch 3.exe',stderr=subprocess.DEVNULL)
         keyboard.add_hotkey('a', lambda: os._exit(0))
 
-        time.sleep(5)
-        self._get_block("START", (self.program_x, self.program_y-5))
-        self.program_y += 10
-        self._parse_code_block(self.code_block)
+        windows = [w for w in gw.getWindowsWithTitle('Scratch 3.29.1') if w.title]
+        if windows:
+            win = windows[0]
+            win.restore()  # un-minimize
+            win.activate()  # bring to front
+
+            time.sleep(1)
+            self._get_block("START", (self.program_x, self.program_y-5))
+            self.program_y += 10
+            self._parse_code_block(self.code_block)
     
     def run_out(self):
         time.sleep(1)
@@ -326,9 +332,11 @@ class Scratch(Transpiler):
             mouse.click()
             time.sleep(5)
 
-            win.close()
-            time.sleep(0.5)
-
-            mouse.move(760,550)
-            time.sleep(0.1)
+            mouse.move(380,142)
+            mouse.click()
+            time.sleep(self.mouse_delay)
+            mouse.move(400,187)
+            mouse.click()
+            time.sleep(self.mouse_delay)
+            mouse.move(916,520)
             mouse.click()
