@@ -116,8 +116,12 @@ class PythonTranspiler(Transpiler):
             win.restore()  # un-minimize
             win.activate()  # bring to front
         
-        time.sleep(1)
+            time.sleep(1)
 
-        keyboard.press_and_release('enter')
-        keyboard.write('program()', delay=0.02)
-        keyboard.press_and_release('enter')
+            keyboard.press_and_release('enter')
+            keyboard.write('program()', delay=0.02)
+            keyboard.press_and_release('enter')
+
+            time.sleep(5)
+
+            win.close()
