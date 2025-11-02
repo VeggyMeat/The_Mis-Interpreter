@@ -99,7 +99,7 @@ class PythonTranspiler(Transpiler):
         code_to_display = code_to_display.replace("\\", "\\\\").replace('"', '\\"')
         delay_seconds = 0.02
 
-        print(code_to_display)
+        # print(code_to_display)
 
         code_runner = f'''
 import time
