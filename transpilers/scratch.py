@@ -30,8 +30,8 @@ class Scratch(Transpiler):
     program_x : int = 580
     program_y : int = 250
     expressions_area = (550,700)
-    mouse_delay = 0.1
-    scroll_delay = 0.15
+    mouse_delay = 0.15
+    scroll_delay = 0.2
 
     tabs: dict[str, tuple[int, int]] = {"variables":(240,550), "operators":(240,500),"control":(240,410),"looks":(240,275),"events":(240,360)}
     def _get_variable(self, variable_name : str, location: tuple[int,int]) -> None:
