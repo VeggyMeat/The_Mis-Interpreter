@@ -83,7 +83,7 @@ class MinecraftTranspiler(Transpiler):
 
     def run_in(self) -> None:
         commands = self._code_block_to_commands(self.code_block)
-        setup = ["scoreboard objectives setdisplay sidebar vars", "scoreboard objectives add vars dummy"]
+        setup = ["scoreboard objectives add vars dummy", "scoreboard objectives setdisplay sidebar vars"]
         commands = setup + commands
         windows = [w for w in gw.getWindowsWithTitle('Minecraft 1.21.10 - Singleplayer') if w.title]
         if windows:
