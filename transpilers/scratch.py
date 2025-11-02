@@ -120,11 +120,11 @@ class Scratch(Transpiler):
             case ExpressionType.VALUE:
                 expression = cast(Value, expression)
                 self._get_block("ADD", result_location)
-                mouse.move(13,0,absolute=False)
+                mouse.move(58,0,absolute=False)
                 mouse.click()
                 time.sleep(self.mouse_delay)
                 keyboard.write(str(expression.value))
-                mouse.move(-13,0,absolute=False)
+                mouse.move(-58,0,absolute=False)
                 time.sleep(self.mouse_delay)
             
             case ExpressionType.VARIABLE:
@@ -238,7 +238,7 @@ class Scratch(Transpiler):
                 
         # mouse.move(result_location[0]-10, result_location[1], absolute=True)
         mouse.move(result_location[0]-2, result_location[1]+2, absolute=True)
-        if expression.expression_type == ExpressionType.OPERATION and expression.operator not in [Operator.ADD, Operator.SUBTRACT, Operator.MULTIPLY]:
+        if expression.expression_type != ExpressionType.OPERATION or expression.operator not in [Operator.ADD, Operator.SUBTRACT, Operator.MULTIPLY]:
             mouse.move(5, 3, absolute=False)
         time.sleep(self.mouse_delay)
         return
@@ -300,7 +300,7 @@ class Scratch(Transpiler):
                 mouse.release()
                 time.sleep(self.mouse_delay)
 
-                self.program_y += 34
+                self.program_y += 36
             
             if command.command_type == CommandType.OUTPUT:
                 command = cast(Output, command)
