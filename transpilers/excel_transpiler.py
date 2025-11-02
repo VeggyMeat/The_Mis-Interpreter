@@ -30,13 +30,18 @@ class ExcelTranspiler(Transpiler):
         self.run_cell = "G2"
     
     def _write_cell_char_by_char(self, cell, text):
+        print(text)
         self.sheet.range(cell).value = ""
-        for i in range(0, len(text), 3):
-            self.sheet.range(cell).value = text[:i+1]
-            time.sleep(DELAY)
+        if text and text[0] == "=":
+            self.sheet.range(cell).value = text
+            time.sleep(DELAY*len(text))
+        else:
+            for i in range(0, len(text), 1):
+                self.sheet.range(cell).value = text[:i+1]
+                time.sleep(DELAY)
 
     def _generate_excel_file(self) -> None:
-        self.app = xw.App(visible=False)
+        self.app = xw.App(visible=True)
         self.wb = self.app.books.add()
         self.sheet = self.wb.sheets[0]
 
