@@ -4,6 +4,7 @@ from program.code_block import CodeBlock
 from transpilers.python_transpiler import PythonTranspiler
 from transpilers.excel_transpiler import ExcelTranspiler
 from transpilers.minecraft_transpiler import MinecraftTranspiler
+from transpilers.mindustry_transpiler import MindustryTranspiler
 from transpilers.scratch import Scratch
 
 class ExecutionController:
@@ -33,14 +34,23 @@ class ExecutionController:
         excel_transpiler = ExcelTranspiler(self.program)
         excel_transpiler.run_in()
 
-        print("Transpiling program.xlsx to Minecraft commands...")
+        print("Transpiling program.xlsx to Mindustry commands...")
+        mindustry_transpiler = MindustryTranspiler(self.program)
+        mindustry_transpiler.run_in()
+
+        print("Transpiling Mindustry commands to Minecraft commands...")
         minecraft_transpiler = MinecraftTranspiler(self.program)
         minecraft_transpiler.run_in()
 
         minecraft_transpiler.run_out()
+        mindustry_transpiler.run_out()
         excel_transpiler.run_out()
         scratch_transpiler.run_out()
-        python_transpiler.run_out()
+        output = python_transpiler.run_out()
+        
+        print()
+        for line in output:
+            print(line)
     
     def _load_program(self, c_code: str) -> CodeBlock:
         with open(self.file, 'r') as f:
