@@ -11,6 +11,7 @@ from program.operator import Operator
 from transpilers.transpiler import Transpiler
 
 import xlwings as xw
+import pygetwindow as gw
 
 DELAY = 0.03
 TIME_HELD = 3
@@ -39,6 +40,12 @@ class ExcelTranspiler(Transpiler):
         self.app = xw.App(visible=True,add_book=False)
         self.wb = self.app.books.add()
         self.sheet = self.wb.sheets[0]
+
+        windows = [w for w in gw.getWindowsWithTitle('Excel') if w.title]
+        if windows:
+            win = windows[0]
+            win.restore()  # un-minimize
+            win.activate()  # bring to front
 
         for i, column_name in enumerate(["Type", "Variable", "Expression", "Run?", "Result", "Variable Set", "Run Cell"]):
             self._write_cell_char_by_char(f"{'ABCDEFG'[i]}{self.row}", column_name)
@@ -126,6 +133,11 @@ class ExcelTranspiler(Transpiler):
         self._generate_excel_file()
 
     def run_out(self) -> None:
+        windows = [w for w in gw.getWindowsWithTitle('Excel') if w.title]
+        if windows:
+            win = windows[0]
+            win.restore()  # un-minimize
+            win.activate()  # bring to front
         time.sleep(1)
         self._write_cell_char_by_char(self.run_cell, "TRUE")
         time.sleep(TIME_HELD)
