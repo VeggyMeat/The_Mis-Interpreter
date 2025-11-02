@@ -48,20 +48,29 @@ class Parser:
         return node
 
     def parse_compare(self):
-        node = self.parse_term()
+        node = self.parse_unary()
         while self.peek() in ('==', '!=', '<', '>'):
             op = self.consume()
-            right = self.parse_term()
+            right = self.parse_unary()
             node = Operation(op, node, right)
         return node
+    
+    def parse_unary(self):
+        tok = self.peek()
+        if tok == '-':
+            self.consume('-')
+            right = self.parse_unary()
+            # treat "-x" as "0 - x"
+            return Operation('-', Value(0), right)
+        return self.parse_primary()
 
-    def parse_term(self):
+    def parse_primary(self):
         tok = self.peek()
         if tok is None:
-            raise SyntaxError("Unexpected end")
+            raise SyntaxError("Unexpected end of input")
         if tok.isdigit():
             self.consume()
-            return Value(int(tok))
+            return Value(tok)
         elif re.match(r"[A-Za-z_]\w*", tok):
             self.consume()
             return Variable(tok)
