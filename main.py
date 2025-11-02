@@ -2,10 +2,7 @@ import sys
 
 from program.code_block import CodeBlock
 from transpilers.python_transpiler import PythonTranspiler
-from transpilers.excel_transpiler import ExcelTranspiler
 from transpilers.minecraft_transpiler import MinecraftTranspiler
-from transpilers.mindustry_transpiler import MindustryTranspiler
-from transpilers.scratch import Scratch
 
 class ExecutionController:
     program: CodeBlock
@@ -20,6 +17,10 @@ class ExecutionController:
         input(f"\nExecute {self.file}?")
 
         print(f"Transpiling {self.file} to program.py...")
+
+        transpiler = MinecraftTranspiler(self.program)
+        transpiler.run_in()
+        return
 
         python_transpiler = PythonTranspiler(self.program)
         python_transpiler.run_in()

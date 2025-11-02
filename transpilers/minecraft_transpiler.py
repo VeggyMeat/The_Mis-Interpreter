@@ -28,21 +28,59 @@ class MinecraftTranspiler(Transpiler):
                 expression = self._expression_to_commands(cmd.expression)
                 commands += expression[:-1]
                 commands.append(f"scoreboard players operation {cmd.variable.name} vars = {expression[-1]} vars")
+
             elif isinstance(cmd, Condition):
-                true_code_block = self._code_block_to_commands(cmd.true_code_block)
-                false_code_block = self._code_block_to_commands(cmd.false_code_block)
-                expression = self._expression_to_commands(cmd.expression)
-                commands += expression[:-1]
-                true_code_block = [f"execute unless score {expression[-1]} vars matches 0 run " + line for line in true_code_block]
-                false_code_block = [f"execute if score {expression[-1]} vars matches 0 run " + line for line in false_code_block]
-                commands += true_code_block
-                commands += false_code_block
+                # condition expression must be Operation with a comparison operator
+                expr = cmd.expression
+                if isinstance(expr, Operation) and expr.operator in {
+                    Operator.EQUALS, Operator.NOT_EQUALS,
+                    Operator.LESS_THAN, Operator.GREATER_THAN
+                }:
+                    left = self._expression_to_commands(expr.left_operand)
+                    right = self._expression_to_commands(expr.right_operand)
+                    commands += left[:-1] + right[:-1]
+
+                    left_var = left[-1]
+                    right_var = right[-1]
+
+                    true_cmds = self._code_block_to_commands(cmd.true_code_block)
+                    false_cmds = self._code_block_to_commands(cmd.false_code_block)
+
+                    op = self._operator_to_minecraft(expr.operator)
+
+                    # generate execute condition syntax
+                    if op == "==":
+                        cond = f"execute if score {left_var} vars = {right_var} vars run "
+                        neg = f"execute unless score {left_var} vars = {right_var} vars run "
+                    elif op == "!=":
+                        cond = f"execute unless score {left_var} vars = {right_var} vars run "
+                        neg = f"execute if score {left_var} vars = {right_var} vars run "
+                    else:
+                        cond = f"execute if score {left_var} vars {op} {right_var} vars run "
+                        neg = f"execute unless score {left_var} vars {op} {right_var} vars run "
+
+                    commands += [cond + line for line in true_cmds]
+                    commands += [neg + line for line in false_cmds]
+                else:
+                    # fallback to numeric boolean evaluation
+                    expression = self._expression_to_commands(cmd.expression)
+                    commands += expression[:-1]
+                    true_block = [f"execute unless score {expression[-1]} vars matches 0 run " + line
+                                  for line in self._code_block_to_commands(cmd.true_code_block)]
+                    false_block = [f"execute if score {expression[-1]} vars matches 0 run " + line
+                                   for line in self._code_block_to_commands(cmd.false_code_block)]
+                    commands += true_block + false_block
+
             elif isinstance(cmd, Output):
                 expression = self._expression_to_commands(cmd.expression)
                 commands += expression[:-1]
-                commands.append(f'title @a title [{{"text":"Output: "}},{{"score":{{"name":"{expression[-1]}","objective":"vars"}}}}]')
+                commands.append(
+                    f'title @a title [{{"text":"Output: "}},{{"score":{{"name":"{expression[-1]}","objective":"vars"}}}}]'
+                )
+
             elif isinstance(cmd, CodeBlock):
                 commands += self._code_block_to_commands(cmd)
+
         return commands
 
     def _operator_to_minecraft(self, operator: Operator) -> str:
