@@ -17,6 +17,7 @@ from program.operator import Operator
 from transpilers.transpiler import Transpiler
 
 import pygetwindow as gw
+import pyperclip
 
 
 class PythonTranspiler(Transpiler):
@@ -106,9 +107,9 @@ class PythonTranspiler(Transpiler):
         
         code_to_display = 'def program():\n' + code_to_display
         keyboard.write(code_to_display, delay=delay_seconds)
-        print()
+        time.sleep(1)
 
-    def run_out(self) -> None:
+    def run_out(self) -> list[int]:
         windows = [w for w in gw.getWindowsWithTitle('IDLE Shell 3.14.0') if w.title]
         if windows:
             win = windows[0]
@@ -125,4 +126,13 @@ class PythonTranspiler(Transpiler):
 
             time.sleep(5)
 
+            keyboard.send('ctrl+a')
+            keyboard.send('ctrl+c')
+
+            text = pyperclip.paste().splitlines()
+            output = text[text.index("program()")+1:]
+
             win.close()
+
+            return [int(line) for line in output]
+            
