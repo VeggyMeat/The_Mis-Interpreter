@@ -354,4 +354,4 @@ class Scratch(Transpiler):
             mouse.click()
 
             time.sleep(self.mouse_delay)
-            win.close()
+            win.minimize()

@@ -130,4 +130,6 @@ class MindustryTranspiler(Transpiler):
             time.sleep(MOUSE_DELAY)
             mouse.move(595,610)
             time.sleep(HOLD_TIME)
+            mouse.move(0,100,absolute=False)
+            mouse.click()
             win.minimize()  # minimize after running
