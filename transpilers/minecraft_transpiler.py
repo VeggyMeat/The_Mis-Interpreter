@@ -40,7 +40,7 @@ class MinecraftTranspiler(Transpiler):
             elif isinstance(cmd, Output):
                 expression = self._expression_to_commands(cmd.expression)
                 commands += expression[:-1]
-                commands.append(f'tellraw @a [{{"text":"Output: "}},{{"score":{{"name":"{expression[-1]}","objective":"vars"}}}}]')
+                commands.append(f'title @a title [{{"text":"Output: "}},{{"score":{{"name":"{expression[-1]}","objective":"vars"}}}}]')
             elif isinstance(cmd, CodeBlock):
                 commands += self._code_block_to_commands(cmd)
         return commands
