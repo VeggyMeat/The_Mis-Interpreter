@@ -6,6 +6,7 @@ Theme: Unintended Behavior
 
 Created by The Misinterpreters: Archie Macrae, Rohan Wadhawan, and Samuel Latimer
 
+2nd place prize winner at CamHack '25
 
 This program accepts instructions in C programming language and translates - transpiles - them into various high-level languages and games.
 As of MISINTERPRETER 1.0, these include:
@@ -14,7 +15,6 @@ As of MISINTERPRETER 1.0, these include:
 3. Excel
 4. Minecraft
 5. Mindustry
-6. More to come...
 
 At the moment, the working program is able to implement - transpile - the following constructs:
 1. Addition, subtraction and multiplication with integer values
