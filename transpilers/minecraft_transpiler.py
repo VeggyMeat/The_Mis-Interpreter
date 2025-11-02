@@ -27,20 +27,20 @@ class MinecraftTranspiler(Transpiler):
             if isinstance(cmd, Assignment):
                 expression = self._expression_to_commands(cmd.expression)
                 commands += expression[:-1]
-                commands.append(f"scoreboard players operation {cmd.variable.name} {cmd.variable.name} = {expression[-1]} {expression[-1]}")
+                commands.append(f"scoreboard players operation {cmd.variable.name} vars = {expression[-1]} vars")
             elif isinstance(cmd, Condition):
                 true_code_block = self._code_block_to_commands(cmd.true_code_block)
                 false_code_block = self._code_block_to_commands(cmd.false_code_block)
                 expression = self._expression_to_commands(cmd.expression)
                 commands += expression[:-1]
-                true_code_block = [f"execute if score {expression[-1]} {expression[-1]} matches 1 run " + line for line in true_code_block]
-                false_code_block = [f"execute if score {expression[-1]} {expression[-1]} matches 0 run " + line for line in false_code_block]
+                true_code_block = [f"execute if score {expression[-1]} vars matches 1 run " + line for line in true_code_block]
+                false_code_block = [f"execute if score {expression[-1]} vars matches 0 run " + line for line in false_code_block]
                 commands += true_code_block
                 commands += false_code_block
             elif isinstance(cmd, Output):
                 expression = self._expression_to_commands(cmd.expression)
                 commands += expression[:-1]
-                commands.append(f'tellraw @a [{{"text":"Output: "}},{{"score":{{"name":"{expression[-1]}","objective":"{expression[-1]}"}}}}]')
+                commands.append(f'tellraw @a [{{"text":"Output: "}},{{"score":{{"name":"{expression[-1]}","objective":"vars"}}}}]')
             elif isinstance(cmd, CodeBlock):
                 commands += self._code_block_to_commands(cmd)
         return commands
@@ -62,7 +62,7 @@ class MinecraftTranspiler(Transpiler):
 
     def _expression_to_commands(self, expression) -> list[str]:
         if isinstance(expression, Value):
-            out = [f"scoreboard players set temp{self.temp_var_count} temp{self.temp_var_count} {expression.value}", f"temp{self.temp_var_count}"]
+            out = [f"scoreboard players set temp{self.temp_var_count} vars {expression.value}", f"temp{self.temp_var_count}"]
             self.temp_var_count += 1
             return out
         elif isinstance(expression, Variable):
@@ -74,8 +74,8 @@ class MinecraftTranspiler(Transpiler):
             out += left_expression[:-1]
             right_expression = self._expression_to_commands(expression.right_operand)
             out += right_expression[:-1]
-            out.append(f"scoreboard players operation temp{self.temp_var_count} temp{self.temp_var_count} = {left_expression[-1]} {left_expression[-1]}")
-            out.append(f"scoreboard players operation temp{self.temp_var_count} temp{self.temp_var_count} {self._operator_to_minecraft(expression.operator)} {right_expression[-1]} {right_expression[-1]}")
+            out.append(f"scoreboard players operation temp{self.temp_var_count} vars = {left_expression[-1]} vars")
+            out.append(f"scoreboard players operation temp{self.temp_var_count} vars {self._operator_to_minecraft(expression.operator)} {right_expression[-1]} vars")
             out.append(f"temp{self.temp_var_count}")
             self.temp_var_count += 1
             return out
@@ -83,11 +83,11 @@ class MinecraftTranspiler(Transpiler):
 
     def run_in(self) -> None:
         commands = self._code_block_to_commands(self.code_block)
-        setup = []
+        setup = ["scoreboard objectives setdisplay sidebar vars"]
         for var in self.variables:
-            setup.append(f"scoreboard objectives add {var} dummy")
+            setup.append(f"scoreboard objectives add {var} vars")
         for i in range(self.temp_var_count):
-            setup.append(f"scoreboard objectives add temp{i} dummy")
+            setup.append(f"scoreboard objectives add temp{i} vars")
         commands = setup + commands
         windows = [w for w in gw.getWindowsWithTitle('Minecraft 1.21.10 - Singleplayer') if w.title]
         if windows:
@@ -99,8 +99,14 @@ class MinecraftTranspiler(Transpiler):
         keyboard.press_and_release('escape')
         for command in commands:
             keyboard.press_and_release('/')
-            time.sleep(0.1)
-            keyboard.write(command, delay=DELAY)
+            time.sleep(0.05)
+            words = command.split(' ')
+            for i, word in enumerate(words):
+                if i != 0:
+                    keyboard.write(' ' + word)
+                else:
+                    keyboard.write(word)
+                time.sleep(DELAY)
             keyboard.press_and_release('enter')
         
         time.sleep(TIME_HELD)
@@ -109,4 +115,11 @@ class MinecraftTranspiler(Transpiler):
         windows = [w for w in gw.getWindowsWithTitle('Minecraft 1.21.10 - Singleplayer') if w.title]
         if windows:
             win = windows[0]
+            win.restore()  # un-minimize
+            win.activate()  # bring to front
+            keyboard.press_and_release('/')
+            time.sleep(0.05)
+            keyboard.write('scoreboard objectives remove vars')
+            keyboard.press_and_release('enter')
+            time.sleep(DELAY)
             win.minimize()  # minimize after running
