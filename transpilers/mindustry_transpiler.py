@@ -14,6 +14,7 @@ import pyperclip
 import time
 
 HOLD_TIME = 3
+MOUSE_DELAY = 0.3
 
 
 class MindustryTranspiler(Transpiler):
@@ -108,6 +109,12 @@ class MindustryTranspiler(Transpiler):
         # click edit at bottom of screen
         # click import from clipboard
         # click back
+        locs = [(540,590),(537,653),(496,865),(565,569),(325,865)]
+        for x,y in locs:
+            mouse.move(x,y)
+            mouse.click()
+            time.sleep(MOUSE_DELAY)
+        
         time.sleep(HOLD_TIME)
 
     def run_out(self) -> None:
