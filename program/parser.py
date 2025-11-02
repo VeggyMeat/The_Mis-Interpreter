@@ -62,7 +62,7 @@ class Parser:
             right = self.parse_unary()
             # treat "-x" as "0 - x"
             if isinstance(right, Value):
-                return Value(-right.value)
+                return Value('-'+right.value)
             return Operation('-', Value(0), right)
         return self.parse_primary()
 
