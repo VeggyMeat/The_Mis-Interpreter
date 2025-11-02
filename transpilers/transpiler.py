@@ -8,5 +8,5 @@ class Transpiler:
     def run_in(self) -> None:
         ...
     
-    def run_out(self, output: int) -> None:
+    def run_out(self) -> None:
         ...

@@ -1,9 +1,4 @@
-import tempfile
-import subprocess
-import platform
-import os
 import time
-from typing import Optional
 
 from program.code_block import CodeBlock
 from program.assignment import Assignment
@@ -18,6 +13,7 @@ from transpilers.transpiler import Transpiler
 import xlwings as xw
 
 DELAY = 0.03
+TIME_HELD = 3
 
 
 class ExcelTranspiler(Transpiler):
@@ -41,7 +37,7 @@ class ExcelTranspiler(Transpiler):
                 time.sleep(DELAY)
 
     def _generate_excel_file(self) -> None:
-        self.app = xw.App(visible=True,add_book=False)
+        self.app = xw.App(visible=True)
         self.wb = self.app.books.add()
         self.sheet = self.wb.sheets[0]
 
@@ -130,5 +126,6 @@ class ExcelTranspiler(Transpiler):
         """Generate Excel code from code block and open it as popup."""
         self._generate_excel_file()
 
-    def run_out(self, output: Optional[int] = None) -> None:
-        pass
+    def run_out(self) -> None:
+        self._write_cell_char_by_char(self.run_cell, "TRUE")
+        time.sleep(TIME_HELD)

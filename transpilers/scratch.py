@@ -25,7 +25,7 @@ class Scratch(Transpiler):
     variables: list[str] = ["my variable"]
     variables_list_offset : int = 34
     variables_menu_offset : int = 30
-    expressions_area_offset: tuple[int, int] = 60
+    expressions_area_offset: int = 60
     program_x : int = 580
     program_y : int = 250
     expressions_area = (550,700)
@@ -301,9 +301,6 @@ class Scratch(Transpiler):
                 time.sleep(self.mouse_delay)
 
                 self.program_y += 38
-
-
-
 
     def run_in(self) -> None:
         subprocess.Popen(r'C:\Program Files (x86)\Scratch 3\Scratch 3.exe')

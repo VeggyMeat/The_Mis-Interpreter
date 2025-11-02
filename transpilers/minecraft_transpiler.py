@@ -8,6 +8,13 @@ from program.value import Value
 from program.variable import Variable
 from transpilers.transpiler import Transpiler
 
+import pygetwindow as gw
+import time
+import keyboard
+
+DELAY = 0.03
+TIME_HELD = 3
+
 class MinecraftTranspiler(Transpiler):
     def __init__(self, code_block: CodeBlock):
         super().__init__(code_block)
@@ -82,4 +89,19 @@ class MinecraftTranspiler(Transpiler):
         for i in range(self.temp_var_count):
             setup.append(f"scoreboard objectives add temp{i} dummy")
         commands = setup + commands
-        print('\n'.join(commands))
+        windows = [w for w in gw.getWindowsWithTitle('Minecraft') if w.title]
+        if windows:
+            win = windows[0]
+            win.restore()  # un-minimize
+            win.activate()  # bring to front
+        
+        for command in commands:
+            keyboard.write('/' + command, delay=DELAY)
+        
+        time.sleep(TIME_HELD)
+    
+    def run_out(self, output: int) -> None:
+        windows = [w for w in gw.getWindowsWithTitle('Minecraft') if w.title]
+        if windows:
+            win = windows[0]
+            win.minimize()  # minimize after running
