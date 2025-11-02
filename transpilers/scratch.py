@@ -19,6 +19,7 @@ import keyboard
 import mouse
 import subprocess
 
+import pygetwindow as gw
 import sys
 
 class Scratch(Transpiler):
@@ -266,7 +267,7 @@ class Scratch(Transpiler):
                     time.sleep(self.mouse_delay)
                     keyboard.write(command.variable.name)
                     time.sleep(self.mouse_delay)
-                    keyboard.press('enter')
+                    keyboard.press_and_release('enter')
                     time.sleep(self.mouse_delay)
                     
                 i = self.variables.index(command.variable.name)
@@ -312,6 +313,12 @@ class Scratch(Transpiler):
         self._parse_code_block(self.code_block)
     
     def run_out(self):
+        windows = [w for w in gw.getWindowsWithTitle('') if w.title]
+        if windows:
+            win = windows[0]
+            win.restore()  # un-minimize
+            win.activate()  # bring to front
+        
         mouse.move(1020,190,absolute=True)
         mouse.click()
         time.sleep(5)
