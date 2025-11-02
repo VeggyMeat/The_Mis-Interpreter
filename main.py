@@ -1,6 +1,7 @@
 import sys
 
 from program.code_block import CodeBlock
+from transpilers.minecraft_transpiler import MinecraftTranspiler
 from transpilers.python_transpiler import PythonTranspiler
 from transpilers.excel_transpiler import ExcelTranspiler
 
@@ -14,7 +15,7 @@ class ExecutionController:
         self.program = self._load_program(self.file)
 
     def run_program(self) -> None:
-        excel_transpiler = ExcelTranspiler(self.program)
+        excel_transpiler = MinecraftTranspiler(self.program)
         excel_transpiler.run_in()
     
     def _load_program(self, c_code: str) -> CodeBlock:
