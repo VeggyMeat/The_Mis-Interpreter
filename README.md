@@ -17,7 +17,7 @@ As of MISINTERPRETER 1.0, these include:
 6. More to come...
 
 At the moment, the working program is able to implement - transpile - the following constructs:
-1. Addition and Subtraction with integer values
+1. Addition, subtraction and multiplication with integer values
 2. If and else statements (else statements may be null) using comparisons (>, <, !=, ==)
 3. Inputs and outputs
 
