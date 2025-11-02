@@ -306,24 +306,28 @@ class Scratch(Transpiler):
     def run_in(self) -> None:
         subprocess.Popen(r'C:\Program Files (x86)\Scratch 3\Scratch 3.exe',stderr=subprocess.DEVNULL)
         keyboard.add_hotkey('a', lambda: os._exit(0))
-        print("compiling in 10 seconds...")
-        time.sleep(10)
+
+        time.sleep(5)
         self._get_block("START", (self.program_x, self.program_y-5))
         self.program_y += 10
         self._parse_code_block(self.code_block)
     
     def run_out(self):
+        time.sleep(1)
         windows = [w for w in gw.getWindowsWithTitle('Scratch 3.29.1') if w.title]
         if windows:
             win = windows[0]
             win.restore()  # un-minimize
             win.activate()  # bring to front
+
+            time.sleep(1)
         
             mouse.move(1020,190,absolute=True)
             mouse.click()
             time.sleep(5)
 
             win.close()
+            time.sleep(0.5)
 
             mouse.move(760,550)
             time.sleep(0.1)

@@ -110,7 +110,7 @@ class PythonTranspiler(Transpiler):
         print()
 
     def run_out(self) -> None:
-        windows = [w for w in gw.getWindowsWithTitle('') if w.title]
+        windows = [w for w in gw.getWindowsWithTitle('IDLE Shell 3.14.0') if w.title]
         if windows:
             win = windows[0]
             win.restore()  # un-minimize
@@ -119,7 +119,9 @@ class PythonTranspiler(Transpiler):
             time.sleep(1)
 
             keyboard.press_and_release('enter')
+            time.sleep(0.5)
             keyboard.write('program()', delay=0.02)
+            time.sleep(0.1)
             keyboard.press_and_release('enter')
 
             time.sleep(5)

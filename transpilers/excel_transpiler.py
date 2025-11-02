@@ -31,8 +31,8 @@ class ExcelTranspiler(Transpiler):
             self.sheet.range(cell).value = text
             time.sleep(DELAY*len(text))
         else:
-            for i in range(0, len(text), 1):
-                self.sheet.range(cell).value = text[:i+1]
+            for i in range(0, len(text)+3, 3):
+                self.sheet.range(cell).value = text[:i+1 if i+1 < len(text) else len(text)]
                 time.sleep(DELAY)
 
     def _generate_excel_file(self) -> None:
@@ -126,5 +126,6 @@ class ExcelTranspiler(Transpiler):
         self._generate_excel_file()
 
     def run_out(self) -> None:
+        time.sleep(1)
         self._write_cell_char_by_char(self.run_cell, "TRUE")
         time.sleep(TIME_HELD)
