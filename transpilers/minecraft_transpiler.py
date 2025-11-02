@@ -89,19 +89,24 @@ class MinecraftTranspiler(Transpiler):
         for i in range(self.temp_var_count):
             setup.append(f"scoreboard objectives add temp{i} dummy")
         commands = setup + commands
-        windows = [w for w in gw.getWindowsWithTitle('Minecraft') if w.title]
+        windows = [w for w in gw.getWindowsWithTitle('Minecraft 1.21.10 - Singleplayer') if w.title]
         if windows:
             win = windows[0]
             win.restore()  # un-minimize
             win.activate()  # bring to front
         
+        time.sleep(1)
+        keyboard.press_and_release('escape')
         for command in commands:
-            keyboard.write('/' + command, delay=DELAY)
+            keyboard.press_and_release('/')
+            time.sleep(0.1)
+            keyboard.write(command, delay=DELAY)
+            keyboard.press_and_release('enter')
         
         time.sleep(TIME_HELD)
     
-    def run_out(self, output: int) -> None:
-        windows = [w for w in gw.getWindowsWithTitle('Minecraft') if w.title]
+    def run_out(self) -> None:
+        windows = [w for w in gw.getWindowsWithTitle('Minecraft 1.21.10 - Singleplayer') if w.title]
         if windows:
             win = windows[0]
             win.minimize()  # minimize after running
