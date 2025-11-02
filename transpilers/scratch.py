@@ -238,7 +238,7 @@ class Scratch(Transpiler):
                 
         # mouse.move(result_location[0]-10, result_location[1], absolute=True)
         mouse.move(result_location[0]-2, result_location[1]+2, absolute=True)
-        if expression.expression_type == ExpressionType.OPERATION and expression.operator not in [Operator.ADD, Operator.SUBTRACT]:
+        if expression.expression_type == ExpressionType.OPERATION and expression.operator not in [Operator.ADD, Operator.SUBTRACT, Operator.MULTIPLY]:
             mouse.move(5, 3, absolute=False)
         time.sleep(self.mouse_delay)
         return
@@ -300,7 +300,7 @@ class Scratch(Transpiler):
                 mouse.release()
                 time.sleep(self.mouse_delay)
 
-                self.program_y += 38
+                self.program_y += 34
             
             if command.command_type == CommandType.OUTPUT:
                 command = cast(Output, command)
