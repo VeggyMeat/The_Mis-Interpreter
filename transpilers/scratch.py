@@ -160,11 +160,7 @@ class Scratch(Transpiler):
                         mouse.move(13,-self.expressions_area_offset,absolute=False)
                         mouse.release()
                         time.sleep(self.mouse_delay)
-
-                    case Operator.LEFT_SHIFT:
-                        pass
-                    case Operator.RIGHT_SHIFT:
-                        pass
+                    
                     case Operator.EQUALS:
                         self._get_block("EQUALS", result_location)
 
