@@ -1,8 +1,11 @@
 Project Name: MISINTERPRETER 1.0
+
 Purpose: CamHack '25
+
 Theme: Unintended Behavior
 
 Created by The Misinterpreters: Archie Mcrae, Rohan Wadhawan, and Samuel Latimer
+
 
 This program accepts instructions in C programming language and translates - transpiles - them into various high-level languages and games.
 As of MISINTERPRETER 1.0, these include:
