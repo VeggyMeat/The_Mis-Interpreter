@@ -1,5 +1,7 @@
 import time
 
+import mouse
+
 from program.code_block import CodeBlock
 from program.assignment import Assignment
 from program.condition import Condition
@@ -142,3 +144,6 @@ class ExcelTranspiler(Transpiler):
         time.sleep(TIME_HELD)
         if windows:
             win.close()
+            mouse.move(793,652)
+            time.sleep(1)
+            mouse.click()

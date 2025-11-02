@@ -101,7 +101,7 @@ class MindustryTranspiler(Transpiler):
         commands.append("end")
         commandString = '\n'.join(commands)
         pyperclip.copy(commandString)
-        windows = [w for w in gw.getWindowsWithTitle('Mindustry') if w.title]
+        windows = [w for w in gw.getWindowsWithTitle('Mindustry') if w.title=="Mindustry"]
         if windows:
             win = windows[0]
             win.restore()  # un-minimize
@@ -122,7 +122,7 @@ class MindustryTranspiler(Transpiler):
         time.sleep(HOLD_TIME)
 
     def run_out(self) -> None:
-        windows = [w for w in gw.getWindowsWithTitle('Mindustry') if w.title]
+        windows = [w for w in gw.getWindowsWithTitle('Mindustry') if w.title=="Mindustry"]
         if windows:
             win = windows[0]
             win.restore()  # un-minimize
