@@ -71,6 +71,11 @@ class Scratch(Transpiler):
                 mouse.click()
                 time.sleep(self.scroll_delay)
                 mouse.move(285,300,absolute=True)
+            case "MULTIPLY":
+                mouse.move(self.tabs["operators"][0], self.tabs["operators"][1],absolute=True)
+                mouse.click()
+                time.sleep(self.scroll_delay)
+                mouse.move(285,335,absolute=True)
             case "EQUALS":
                 mouse.move(self.tabs["operators"][0], self.tabs["operators"][1],absolute=True)
                 mouse.click()
@@ -148,6 +153,21 @@ class Scratch(Transpiler):
 
                     case Operator.SUBTRACT:
                         self._get_block("SUBTRACT", result_location)
+
+                        self._parse_expression(expression.right_operand, (result_location[0], result_location[1] + self.expressions_area_offset))
+                        mouse.press()
+                        mouse.move(58,-self.expressions_area_offset,absolute=False)
+                        mouse.release()
+                        time.sleep(self.mouse_delay)
+
+                        self._parse_expression(expression.left_operand, (result_location[0], result_location[1] + self.expressions_area_offset))
+                        mouse.press()
+                        mouse.move(13,-self.expressions_area_offset,absolute=False)
+                        mouse.release()
+                        time.sleep(self.mouse_delay)
+                    
+                    case Operator.MULTIPLY:
+                        self._get_block("MULTIPLY", result_location)
 
                         self._parse_expression(expression.right_operand, (result_location[0], result_location[1] + self.expressions_area_offset))
                         mouse.press()
