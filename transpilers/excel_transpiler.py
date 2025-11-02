@@ -26,7 +26,6 @@ class ExcelTranspiler(Transpiler):
         self.run_cell = "G2"
     
     def _write_cell_char_by_char(self, cell, text):
-        print(text)
         self.sheet.range(cell).value = ""
         if text and text[0] == "=":
             self.sheet.range(cell).value = text
