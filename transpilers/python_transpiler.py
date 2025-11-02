@@ -23,20 +23,19 @@ class PythonTranspiler(Transpiler):
     def __init__(self, code_block):
         super().__init__(code_block)
 
-    def _convert(self, code_block=None, indent=0):
+    def _convert(self, code_block=None):
         if code_block is None:
             code_block = self.code_block
 
         code = ""
-        indent_str = "    " * indent
 
         for cmd in code_block.commands:
             if isinstance(cmd, Assignment):
-                code += f"{indent_str}{self._convert_assignment(cmd)}\n"
+                code += f"{self._convert_assignment(cmd)}\n"
             elif isinstance(cmd, Condition):
-                code += self._convert_condition(cmd, indent)
+                code += self._convert_condition(cmd)
             elif isinstance(cmd, Output):
-                code += f"{indent_str}{self._convert_output(cmd)}\n"
+                code += f"{self._convert_output(cmd)}\n"
 
         return code
 
@@ -45,14 +44,14 @@ class PythonTranspiler(Transpiler):
         expr = self._convert_expression(assignment.expression)
         return f"{var_name} = {expr}"
 
-    def _convert_condition(self, condition: Condition, indent: int) -> str:
+    def _convert_condition(self, condition: Condition) -> str:
         expr = self._convert_expression(condition.expression)
-        code = f"{'    '*indent}if {expr}:\n"
-        code += self._convert(condition.true_code_block, indent + 1)
+        code = f"if {expr}:\n"
+        code += self._convert(condition.true_code_block) + "\b"
 
         if getattr(condition, "false_code_block", None) and condition.false_code_block.commands:
-            code += f"{'    '*indent}else:\n"
-            code += self._convert(condition.false_code_block, indent + 1)
+            code += f"else:\n"
+            code += self._convert(condition.false_code_block) + "\b"
 
         return code
 
