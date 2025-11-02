@@ -32,16 +32,16 @@ class Parser:
         return self.parse_add_sub()
 
     def parse_add_sub(self) -> Expression:
-        node = self.parse_shift()
+        node = self.parse_mul()
         while self.peek() in ('+', '-'):
             op = self.consume()
-            right = self.parse_shift()
+            right = self.parse_mul()
             node = Operation(op, node, right)
         return node
-
-    def parse_shift(self) -> Expression:
+    
+    def parse_mul(self):
         node = self.parse_compare()
-        while self.peek() in ('>>', '<<'):
+        while self.peek() == '*':
             op = self.consume()
             right = self.parse_compare()
             node = Operation(op, node, right)
