@@ -9,6 +9,7 @@ from program.value import Value
 from program.variable import Variable
 from transpilers.transpiler import Transpiler
 
+import pygetwindow as gw
 import mouse
 import pyperclip
 import time
@@ -105,7 +106,7 @@ class MindustryTranspiler(Transpiler):
             win = windows[0]
             win.restore()  # un-minimize
             win.activate()  # bring to front
-        time.sleep(0.5)
+        time.sleep(1)
         # click on processor
         # click edit pencil symbol
         # click edit at bottom of screen
@@ -113,7 +114,8 @@ class MindustryTranspiler(Transpiler):
         # click back
         locs = [(540,590),(537,653),(496,865),(565,569),(325,865)]
         for x,y in locs:
-            mouse.move(x,y)
+            mouse.move(x,y,absolute=True)
+            time.sleep(MOUSE_DELAY)
             mouse.click()
             time.sleep(MOUSE_DELAY)
         
@@ -125,6 +127,7 @@ class MindustryTranspiler(Transpiler):
             win = windows[0]
             win.restore()  # un-minimize
             win.activate()  # bring to front
-            # hover over the message
+            time.sleep(MOUSE_DELAY)
+            mouse.move(595,610)
             time.sleep(HOLD_TIME)
             win.minimize()  # minimize after running
