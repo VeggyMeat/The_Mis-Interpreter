@@ -121,7 +121,7 @@ class ExcelTranspiler(Transpiler):
                 expr = self._convert_expression(cmd.expression)
                 self._write_cell_char_by_char(f"A{self.row}", "Output")
                 self._write_cell_char_by_char(f"C{self.row}", expr)
-                self._write_cell_char_by_char(f"D{self.row}", f"=D{self.row - 1}" if self.row > 2 else "")
+                self._write_cell_char_by_char(f"D{self.row}", f"=D{self.row - 1}" if self.row > 2 else f"={self.run_cell}")
                 expr_actual = self._convert_expression_actual(cmd.expression)
                 self._write_cell_char_by_char(f"E{self.row}", f"=IF(D{self.row}, {expr_actual}, \"\")")
                 self.row += 1
