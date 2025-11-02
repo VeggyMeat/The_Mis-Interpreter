@@ -2,3 +2,4 @@ keyboard
 mouse
 xlwings
 pygetwindow
+pyperclip

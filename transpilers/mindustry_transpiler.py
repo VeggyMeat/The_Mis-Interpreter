@@ -10,6 +10,7 @@ from program.variable import Variable
 from transpilers.transpiler import Transpiler
 
 import mouse
+import pyperclip
 import time
 
 HOLD_TIME = 3
@@ -94,13 +95,19 @@ class MindustryTranspiler(Transpiler):
     def run_in(self) -> None:
         commands = self._code_block_to_commands(self.code_block)
         commands.append("end")
-        print('\n'.join([f"{i}: {command}" for i, command in enumerate(commands)]))
-        print('\n'.join(commands))
+        commandString = '\n'.join(commands)
+        pyperclip.copy(commandString)
         windows = [w for w in gw.getWindowsWithTitle('Mindustry') if w.title]
         if windows:
             win = windows[0]
             win.restore()  # un-minimize
             win.activate()  # bring to front
+        time.sleep(0.5)
+        # click on processor
+        # click edit pencil symbol
+        # click edit at bottom of screen
+        # click import from clipboard
+        # click back
         time.sleep(HOLD_TIME)
 
     def run_out(self) -> None:
