@@ -127,7 +127,7 @@ class ExcelTranspiler(Transpiler):
     def run_in(self) -> None:
         """Generate Excel code from code block and open it as popup."""
         self._generate_excel_file()
-        time.sleep(3)
+        time.sleep(5)
 
     def run_out(self) -> None:
         windows = [w for w in gw.getWindowsWithTitle('Excel') if w.title]

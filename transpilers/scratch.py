@@ -338,7 +338,7 @@ class Scratch(Transpiler):
             win.restore()  # un-minimize
             win.activate()  # bring to front
 
-            time.sleep(1)
+            time.sleep(0.5)
         
             mouse.move(1020,190,absolute=True)
             mouse.click()

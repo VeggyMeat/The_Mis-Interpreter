@@ -1,8 +1,11 @@
 import sys
 
 from program.code_block import CodeBlock
+from transpilers.excel_transpiler import ExcelTranspiler
+from transpilers.mindustry_transpiler import MindustryTranspiler
 from transpilers.python_transpiler import PythonTranspiler
 from transpilers.minecraft_transpiler import MinecraftTranspiler
+from transpilers.scratch import Scratch
 
 class ExecutionController:
     program: CodeBlock
@@ -18,10 +21,6 @@ class ExecutionController:
 
         print(f"Transpiling {self.file} to program.py...")
 
-        transpiler = MinecraftTranspiler(self.program)
-        transpiler.run_in()
-        return
-
         python_transpiler = PythonTranspiler(self.program)
         python_transpiler.run_in()
 
@@ -31,7 +30,6 @@ class ExecutionController:
         scratch_transpiler.run_in()
 
         print("Transpiling program.sb3 to program.xlsx...")
-        
         excel_transpiler = ExcelTranspiler(self.program)
         excel_transpiler.run_in()
 
