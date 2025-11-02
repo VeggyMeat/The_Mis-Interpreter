@@ -4,6 +4,9 @@ import sys
 import tempfile
 import platform
 
+import keyboard
+import time
+
 from program.assignment import Assignment
 from program.condition import Condition
 from program.output import Output
@@ -12,6 +15,8 @@ from program.value import Value
 from program.operation import Operation
 from program.operator import Operator
 from transpilers.transpiler import Transpiler
+
+import pygetwindow as gw
 
 
 class PythonTranspiler(Transpiler):
@@ -90,29 +95,29 @@ class PythonTranspiler(Transpiler):
         code_to_display = code_to_display.replace("\\", "\\\\").replace('"', '\\"')
         delay_seconds = 0.02
 
-        # print(code_to_display)
-
-        code_runner = f'''
-import time
-text = """{code_to_display}"""
-for char in text:
-    print(char, end="", flush=True)
-    time.sleep({delay_seconds})
-print()
-'''
-
-        with tempfile.NamedTemporaryFile("w", delete=False, suffix=".py") as tmp:
-            tmp.write(code_runner)
-            tmp_path = tmp.name
-
         system = platform.system()
         if system == "Darwin":
-            subprocess.Popen(["open", "-a", "IDLE", tmp_path])
+            subprocess.Popen(["open", "-a", "IDLE"])
         elif system == "Windows":
-            subprocess.Popen([sys.executable, "-m", "idlelib", "-r", tmp_path])
+            subprocess.Popen([sys.executable, "-m", "idlelib"])
         else:
-            subprocess.Popen([sys.executable, "-m", "idlelib", "-r", tmp_path])
+            subprocess.Popen([sys.executable, "-m", "idlelib"])
+        
+        time.sleep(2)
+        
+        code_to_display = 'def program():\n' + code_to_display
+        keyboard.write(code_to_display, delay=delay_seconds)
+        print()
 
     def run_out(self) -> None:
-        # TODO
-        pass
+        windows = [w for w in gw.getWindowsWithTitle('') if w.title]
+        if windows:
+            win = windows[0]
+            win.restore()  # un-minimize
+            win.activate()  # bring to front
+        
+        time.sleep(1)
+
+        keyboard.press_and_release('enter')
+        keyboard.write('program()', delay=0.02)
+        keyboard.press_and_release('enter')
