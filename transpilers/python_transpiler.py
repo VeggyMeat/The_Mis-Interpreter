@@ -106,7 +106,7 @@ class PythonTranspiler(Transpiler):
         
         code_to_display = 'def program():\n' + code_to_display
         keyboard.write(code_to_display, delay=delay_seconds)
-        time.sleep(1)
+        time.sleep(3)
 
     def run_out(self) -> list[int]:
         windows = [w for w in gw.getWindowsWithTitle('IDLE Shell 3.14.0') if w.title]

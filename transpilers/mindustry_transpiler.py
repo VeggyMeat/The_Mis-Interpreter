@@ -119,7 +119,7 @@ class MindustryTranspiler(Transpiler):
             mouse.click()
             time.sleep(MOUSE_DELAY)
         
-        time.sleep(HOLD_TIME)
+        time.sleep(HOLD_TIME*1.5)
 
     def run_out(self) -> None:
         windows = [w for w in gw.getWindowsWithTitle('Mindustry') if w.title=="Mindustry"]
