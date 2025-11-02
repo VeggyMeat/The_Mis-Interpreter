@@ -4,7 +4,7 @@ Purpose: CamHack '25
 
 Theme: Unintended Behavior
 
-Created by The Misinterpreters: Archie Mcrae, Rohan Wadhawan, and Samuel Latimer
+Created by The Misinterpreters: Archie Macrae, Rohan Wadhawan, and Samuel Latimer
 
 
 This program accepts instructions in C programming language and translates - transpiles - them into various high-level languages and games.
