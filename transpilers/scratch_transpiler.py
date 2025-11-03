@@ -22,7 +22,7 @@ import subprocess
 import pygetwindow as gw
 import sys
 
-class Scratch(Transpiler):
+class ScratchTranspiler(Transpiler):
     variables: list[str] = ["my variable"]
     variables_list_offset : int = 34
     variables_menu_offset : int = 30

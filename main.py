@@ -5,7 +5,7 @@ from transpilers.excel_transpiler import ExcelTranspiler
 from transpilers.mindustry_transpiler import MindustryTranspiler
 from transpilers.python_transpiler import PythonTranspiler
 from transpilers.minecraft_transpiler import MinecraftTranspiler
-from transpilers.scratch import Scratch
+from transpilers.scratch_transpiler import ScratchTranspiler
 
 class ExecutionController:
     program: CodeBlock
@@ -26,7 +26,7 @@ class ExecutionController:
 
         print("Transpiling program.py to program.sb3...")
 
-        scratch_transpiler = Scratch(self.program)
+        scratch_transpiler = ScratchTranspiler(self.program)
         scratch_transpiler.run_in()
 
         print("Transpiling program.sb3 to program.xlsx...")
