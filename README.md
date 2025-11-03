@@ -1,4 +1,4 @@
-Project Name: MISINTERPRETER 1.0
+Project Name: The Mis-Interpreter
 
 Purpose: CamHack '25
 
@@ -8,17 +8,22 @@ Created by The Misinterpreters: Archie Macrae, Rohan Wadhawan, and Samuel Latime
 
 2nd place prize winner at CamHack '25
 
-This program accepts instructions in C programming language and translates - transpiles - them into various high-level languages and games.
-As of MISINTERPRETER 1.0, these include:
-1. Python
-2. Scratch
-3. Excel
-4. Minecraft
-5. Mindustry
+This program accepts code in the C programming language and transpiles it into various high-level languages and games. These include:
+```
+Python
+Scratch
+Excel
+Mindustry
+Minecraft
+```
 
-At the moment, the working program is able to implement - transpile - the following constructs:
-1. Addition, subtraction and multiplication with integer values
-2. If and else statements (else statements may be null) using comparisons (>, <, !=, ==)
-3. Inputs and outputs
+At the moment, the program implements the following constructs:
+- Addition, subtraction and multiplication with integer values
+- If and else statements (else statements may be null) using standard comparisons (>, <, !=, ==)
+- Inputs and outputs
 
-Latest update: 02/11/25
+Repo structure:
+- `examples` contains example C programs we use as input
+- `programs` contains the code for parsing C code into an AST
+- `transpilers` contains the transpilers for each platform we convert to
+- `main.py` is the Mis-Interpreter, taking in a C program and its arguments, and running the transpilers for each platform
