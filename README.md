@@ -1,12 +1,10 @@
-Project Name: The Mis-Interpreter
+# The Mis-Interpreter
 
-Purpose: CamHack '25
+### 2nd place CamHack '25 project
 
 Theme: Unintended Behavior
 
 Created by The Misinterpreters: Archie Macrae, Rohan Wadhawan, and Samuel Latimer
-
-2nd place prize winner at CamHack '25
 
 This program accepts code in the C programming language and transpiles it into various high-level languages and games. These include:
 ```
